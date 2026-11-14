@@ -1,43 +1,31 @@
-# Astro Starter Kit: Minimal
+# alters.si
+
+Source of my personal website, [alters.si](https://alters.si). Static
+[Astro](https://astro.build) site, served by nginx on my Kubernetes cluster
+([almajter/homelab](https://github.com/almajter/homelab)).
 
 ```sh
-npm create astro@latest -- --template minimal
+npm ci
+npm run dev   # http://localhost:4321
 ```
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Delivery
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
-
-```text
-/
-├── public/
-├── src/
-│   └── pages/
-│       └── index.astro
-└── package.json
+```mermaid
+flowchart LR
+  gh[GitHub] -->|"mirror (Actions)"| gl[self-hosted GitLab]
+  gl -->|CI| img["image :&lt;sha&gt;<br/>registry.alters.si"]
+  gl -->|CI| chart["Helm chart 0.1.&lt;n&gt;<br/>GitLab package registry"]
+  chart --> argo[Argo CD]
+  img --> argo
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+- `Dockerfile`: Astro build, then `nginx-unprivileged` (non-root, port 8080).
+- `chart/`: Deployment, Service, Ingress, PodDisruptionBudget. 2 replicas
+  on different nodes, read-only root filesystem, no capabilities.
+- `.gitlab-ci.yml`: builds the image (tag = short commit SHA) and publishes
+  the chart (version `0.1.<pipeline>`, appVersion = the same SHA).
+- Deploy: bump the chart version in the homelab repo.
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
-
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
-| `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `npm run astro -- --help` | Get help using the Astro CLI                     |
-
-## 👀 Want to learn more?
-
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+Images are built with `--provenance=false`; GitLab's registry rejects
+BuildKit's attestation index (`blob unknown to registry`).
