@@ -1,5 +1,7 @@
 # alters.si
 
+[![build](https://github.com/almajter/alters.si/actions/workflows/build.yml/badge.svg)](https://github.com/almajter/alters.si/actions/workflows/build.yml)
+
 Source of my personal website, [alters.si](https://alters.si). Static
 [Astro](https://astro.build) site, served by nginx on my Kubernetes cluster
 ([almajter/homelab](https://github.com/almajter/homelab)).
