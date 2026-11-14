@@ -1,0 +1,6 @@
+apiVersion: v2
+name: alters-si
+description: Personal website at alters.si
+type: application
+version: 0.1.0
+appVersion: "dev"

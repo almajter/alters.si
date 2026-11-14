@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "alters-si.fullname" . }}
+  labels:
+    {{- include "alters-si.labels" . | nindent 4 }}
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: http
+  selector:
+    {{- include "alters-si.selectorLabels" . | nindent 4 }}
