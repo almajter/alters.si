@@ -1,0 +1,468 @@
+---
+import Icon from './Icon.astro';
+import { build, pipeline as p } from '../data/content';
+---
+
+<div class="graph">
+  <p class="caption"><span aria-hidden="true">↓</span> {p.caption}</p>
+
+  <div class="row">
+    <div class="end push">
+      <span class="label"><i style="background: var(--faint)"></i>{p.push.label}</span>
+      <a class="sketch step" href={p.push.href}>
+        <span class="dir">{p.push.dir}</span>
+        <span class="cmd">{p.push.command}<span class="caret" aria-hidden="true"></span></span>
+      </a>
+    </div>
+
+    <div class="conn" aria-hidden="true"><span>{build.sha}</span><b class="chip">{build.sha}</b></div>
+
+    <div class="frame">
+      <span class="frame-label"><Icon name="proxmox" size={13} />{p.frame}</span>
+      <div class="frame-row">
+        <a class="sketch step ci" href={p.ci.link.href}>
+          <span class="bar"><Icon name="gitlab" size={15} />{p.ci.title}</span>
+          <ul>
+            {p.ci.steps.map((s) => <li><span class="check" aria-hidden="true">✓</span>{s}</li>)}
+          </ul>
+          <span class="go">{p.ci.link.label} <span aria-hidden="true">↗</span></span>
+        </a>
+
+        <div class="conn inner" aria-hidden="true"><span>{p.handoff}</span><b class="chip">{build.sha}</b></div>
+
+        <a class="sketch step k8s" href={p.cluster.href}>
+          <span class="bar">
+            <Icon name="kubernetes" size={15} />{p.cluster.title}
+            <span class="online"><span class="dot"></span>online</span>
+          </span>
+          <span class="argo">
+            <Icon name="argo" size={15} /><strong>Argo CD</strong>
+            <span class="sync"><span aria-hidden="true">⟳</span> {p.cluster.argo} <span aria-hidden="true">→</span> deploys</span>
+          </span>
+          <span class="nodes">
+            {
+              p.cluster.nodes.map((n) => (
+                <span class="node">
+                  <span class="dot" />
+                  <span>{n}</span>
+                  <span class="pod">{p.cluster.pod}</span>
+                </span>
+              ))
+            }
+          </span>
+        </a>
+      </div>
+    </div>
+
+    <div class="conn" aria-hidden="true"><span>https</span><b class="chip">{build.sha}</b></div>
+
+    <div class="end result">
+      <span class="label"><i style="background: var(--ok)"></i>{p.result.label}</span>
+      <div class="sketch step">
+        <span class="live"><svg class="tick" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="8" /><path d="M4.6 8.3l2.2 2.2 4.6-4.8" /></svg>{p.result.status}</span>
+        <span class="host">{p.result.host}</span>
+        <span class="build">build {build.sha}</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  /* Everything in the graph is sized in em off one base that follows the
+     smaller of viewport width and height, so it shrinks on short screens. */
+  .graph {
+    --cycle: 8s;
+    width: 100%;
+    font-size: clamp(9px, min(0.98vw, 1.55svh), 14px);
+  }
+
+  .caption {
+    margin: 0 0 1.4em;
+    text-align: center;
+    color: var(--accent);
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+  }
+
+  .label {
+    display: flex;
+    align-items: center;
+    gap: 0.7em;
+    margin-bottom: 1em;
+    font: 0.9em/1 var(--mono);
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .label i {
+    width: 0.75em;
+    height: 0.75em;
+    border-radius: 2px;
+  }
+
+  /* Sketch card: a solid outline plus a fainter copy offset behind it. */
+  .sketch {
+    display: block;
+    position: relative;
+    border: 1.5px solid rgb(237 237 237 / 0.75);
+    border-radius: 12px;
+    background: var(--surface);
+    box-shadow:
+      5px 5px 0 -1.5px var(--bg),
+      5px 5px 0 0 rgb(237 237 237 / 0.35);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  a.sketch:hover {
+    border-color: var(--ink);
+  }
+
+  /* Push and result line up with the cards inside the frame. */
+  .end {
+    flex: none;
+    width: 11.5em;
+    align-self: flex-end;
+    margin-bottom: calc(1.4em + 1.5px);
+  }
+  .end .sketch {
+    height: 9.2em;
+    padding: 1.1em 1.2em;
+  }
+
+  .push .sketch {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3em;
+    font-family: var(--mono);
+  }
+  .dir {
+    color: var(--faint);
+    font-size: 0.95em;
+  }
+  .cmd {
+    font-size: 1.3em;
+    white-space: nowrap;
+  }
+  .caret {
+    display: inline-block;
+    width: 0.5em;
+    height: 1.05em;
+    margin-left: 0.35em;
+    vertical-align: -0.15em;
+    background: var(--ink);
+    animation: blink 1.1s steps(1) infinite;
+  }
+
+  .result .sketch {
+    display: flex;
+    flex-direction: column;
+  }
+  .live {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding-bottom: 0.55em;
+    border-bottom: 1px solid var(--line-strong);
+    font-size: 1.6em;
+    font-weight: 500;
+  }
+  .tick {
+    width: 0.85em;
+    height: 0.85em;
+  }
+  .tick circle {
+    fill: var(--ok);
+  }
+  .tick path {
+    fill: none;
+    stroke: var(--bg);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .host {
+    margin-top: 0.75em;
+    font-size: 1.1em;
+  }
+  .build {
+    margin-top: 0.2em;
+    color: var(--faint);
+    font: 0.9em var(--mono);
+  }
+
+  /* Connector: solid line, dot at the end, label above. */
+  .conn {
+    position: relative;
+    flex: 1 1 3.4em;
+    min-width: 3.4em;
+    height: 2px;
+    margin: 0 0.5em;
+    align-self: center;
+    background: rgb(76 201 240 / 0.6);
+  }
+  .end + .conn,
+  .conn:has(+ .end) {
+    margin-top: 1.6em;
+  }
+  .conn::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: -3px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .conn span {
+    position: absolute;
+    bottom: 0.7em;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: var(--accent);
+    font: 500 0.72em/1.25 var(--mono);
+  }
+  .chip {
+    position: absolute;
+    top: 50%;
+    left: 0;
+    padding: 0.15em 0.5em;
+    border-radius: 99px;
+    background: var(--accent);
+    color: var(--bg);
+    font: 600 0.62em/1.4 var(--mono);
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Proxmox frame */
+  .frame {
+    flex: 0 1 51.5em;
+    min-width: 0;
+    position: relative;
+    padding: 3.2em 1.4em 1.4em;
+    border: 1.5px solid rgb(91 155 248 / 0.55);
+    border-radius: 18px;
+  }
+  .frame-label {
+    position: absolute;
+    top: 1.1em;
+    left: 1.5em;
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    color: var(--accent);
+    font: 500 0.88em/1 var(--mono);
+    text-transform: uppercase;
+  }
+  .frame-row {
+    display: flex;
+    align-items: stretch;
+  }
+  .frame-row > .conn {
+    align-self: center;
+  }
+  .ci {
+    flex: 0 0 17.5em;
+  }
+  .k8s {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .bar {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    padding: 0.7em 1.1em;
+    border-bottom: 1.5px solid rgb(237 237 237 / 0.5);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .online {
+    display: flex;
+    align-items: center;
+    gap: 0.4em;
+    margin-left: auto;
+    color: var(--ok);
+    font-weight: 400;
+    font-size: 0.92em;
+  }
+  .dot {
+    flex: none;
+    width: 0.62em;
+    height: 0.62em;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .online .dot {
+    animation: pulse 2.4s ease-in-out infinite;
+  }
+
+  .ci ul {
+    margin: 0;
+    padding: 0.7em 1.1em 0.4em;
+    list-style: none;
+    line-height: 1.45;
+  }
+  .ci li {
+    white-space: nowrap;
+  }
+  .check {
+    display: inline-block;
+    width: 1.5em;
+    color: var(--ok);
+  }
+  .go {
+    display: block;
+    padding: 0 1.1em 0.8em;
+    color: var(--accent);
+    font: 0.86em var(--mono);
+  }
+
+  .argo {
+    display: flex;
+    align-items: center;
+    gap: 0.6em;
+    margin: 0.7em 0.75em 0.6em;
+    padding: 0.45em 0.8em;
+    border: 1px solid rgb(76 201 240 / 0.7);
+    border-radius: 6px;
+    background: rgb(76 201 240 / 0.06);
+    white-space: nowrap;
+  }
+  .argo strong {
+    font-weight: 500;
+  }
+  .sync {
+    min-width: 0;
+    margin-left: 0.4em;
+    font-size: 0.95em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--accent);
+  }
+  .nodes {
+    display: grid;
+    gap: 0.15em;
+    padding: 0 1.1em 0.8em 1.4em;
+  }
+  .node {
+    display: grid;
+    grid-template-columns: auto 5.6em 1fr;
+    align-items: center;
+    gap: 0.6em;
+    white-space: nowrap;
+  }
+  .pod {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    color: var(--faint);
+  }
+
+  /* The sha travels push → CI → Kubernetes → Live; each step lights up as it arrives. */
+  .conn .chip {
+    animation: travel var(--cycle) linear infinite;
+  }
+  .push + .conn .chip { animation-delay: 0.4s; }
+  .conn.inner .chip { animation-delay: 2.2s; }
+  .frame + .conn .chip { animation-delay: 4s; }
+
+  .step {
+    animation: arrive var(--cycle) ease-out infinite;
+  }
+  .ci { animation-delay: 1.3s; }
+  .k8s { animation-delay: 3.1s; }
+  .result .step { animation-delay: 4.9s; }
+
+  @keyframes travel {
+    0% { left: 0; opacity: 0; }
+    2% { opacity: 1; }
+    10% { left: 100%; opacity: 1; }
+    12%, 100% { left: 100%; opacity: 0; }
+  }
+  @keyframes arrive {
+    0%, 100% { border-color: rgb(237 237 237 / 0.75); }
+    3% { border-color: var(--accent); }
+    14% { border-color: rgb(237 237 237 / 0.75); }
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+  @keyframes pulse {
+    50% { opacity: 0.35; }
+  }
+
+  /* Narrower screens: the frame stacks CI above Kubernetes. */
+  @media (max-width: 1100px) {
+    .graph {
+      font-size: clamp(9px, min(1.3vw, 1.45svh), 13px);
+    }
+    .frame {
+      flex-basis: 30em;
+      padding-top: 2.8em;
+    }
+    .frame-row {
+      flex-direction: column;
+    }
+    .ci,
+    .k8s {
+      flex: none;
+    }
+    .ci ul {
+      display: flex;
+      flex-wrap: wrap;
+      column-gap: 1.2em;
+      padding-bottom: 0.4em;
+    }
+    .ci .go {
+      display: none;
+    }
+    .conn.inner {
+      flex: none;
+      width: 2px;
+      height: 1.6em;
+      min-width: 0;
+      margin: 0.4em auto 0.6em;
+    }
+    .conn.inner::after {
+      top: auto;
+      bottom: -4px;
+      right: -3px;
+    }
+    .conn.inner span {
+      bottom: auto;
+      top: 0;
+      left: 1.2em;
+      right: auto;
+      white-space: nowrap;
+      line-height: 1.6;
+    }
+    .conn.inner .chip {
+      display: none;
+    }
+  }
+
+  /* Phones: only the home server frame. */
+  @media (max-width: 720px) {
+    .graph {
+      font-size: clamp(9px, min(3vw, 1.6svh), 12px);
+    }
+    .end,
+    .row > .conn {
+      display: none;
+    }
+    .frame {
+      flex: 1 1 auto;
+      padding: 2.8em 1.1em 1.2em;
+    }
+    .ci ul {
+      flex-direction: column;
+    }
+  }
+</style>

@@ -1,16 +1,537 @@
 ---
+import '@fontsource-variable/host-grotesk/wght.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+import groteskLatin from '@fontsource-variable/host-grotesk/files/host-grotesk-latin-wght-normal.woff2?url';
+import Icon from '../components/Icon.astro';
+import DeployGraph from '../components/DeployGraph.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { contact, footer, nav, profile, projects, projectsIntro } from '../data/content';
+
+const pageTitle = `${profile.name} · ${profile.title}`;
+const year = new Date().getFullYear();
 ---
 
 <html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={profile.description} />
+    <link rel="canonical" href="https://alters.si/" />
+    <meta name="theme-color" content="#0a0a0a" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" as="font" type="font/woff2" href={groteskLatin} crossorigin />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://alters.si/" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={profile.description} />
+    <meta property="og:image" content="https://alters.si/projects/obees/obees-render.jpg" />
+  </head>
+
+  <body>
+    <a class="skip" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="wrap topbar-inner">
+        <a class="name" href="#main">{profile.name}</a>
+        <a class="pill" href="#home-server">
+          <Icon name="proxmox" size={14} />
+          <span class="pill-long">{profile.pill.long}</span>
+          <span class="pill-short">{profile.pill.short}</span>
+        </a>
+        <nav class="nav" aria-label="Sections">
+          {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+        </nav>
+        <details class="menu">
+          <summary aria-label="Menu">
+            <span aria-hidden="true"></span>
+          </summary>
+          <nav aria-label="Sections">
+            {nav.map((n) => <a href={n.href}>{n.label}</a>)}
+          </nav>
+        </details>
+      </div>
+    </header>
+
+    <main id="main">
+      <section class="landing wrap" aria-labelledby="headline">
+        <div class="intro">
+          <h1 id="headline">
+            <span>{profile.headline[0]}</span>
+            <span class="muted">{profile.headline[1]}</span>
+          </h1>
+          <p class="badge"><i></i><strong>{profile.badge.strong}</strong> {profile.badge.rest}</p>
+          <p class="lede">{profile.intro}</p>
+          <p class="actions">
+            <a class="btn btn-primary" href="#projects">See projects</a>
+            <a class="btn btn-outline" href="#contact">Contact <span aria-hidden="true">→</span></a>
+          </p>
+        </div>
+        <DeployGraph />
+      </section>
+
+      <section id="projects" class="projects wrap" aria-labelledby="projects-title">
+        <div class="section-head">
+          <div>
+            <p class="section-label"><i></i>Projects</p>
+            <h2 id="projects-title">
+              <span>{projectsIntro.heading[0]}</span>
+              <span class="muted">{projectsIntro.heading[1]}</span>
+            </h2>
+          </div>
+          <p class="aside">{projectsIntro.aside}</p>
+        </div>
+        <div class="grid">
+          {projects.map((p) => <ProjectCard project={p} />)}
+        </div>
+      </section>
+
+      <section id="contact" class="contact wrap" aria-labelledby="contact-title">
+        <h2 id="contact-title" class="section-label"><i></i>{contact.label}</h2>
+        <a class="email" href={`mailto:${contact.email}`}>{contact.email} <span aria-hidden="true">↗</span></a>
+      </section>
+    </main>
+
+    <footer class="footer wrap">
+      <p>© {year} {profile.name}</p>
+      <p class="served"><span class="dot"></span>{footer.status}</p>
+    </footer>
+  </body>
 </html>
+
+<script>
+  // Close the phone menu after a link in it is used.
+  for (const link of document.querySelectorAll('.menu a')) {
+    link.addEventListener('click', () => link.closest('details')?.removeAttribute('open'));
+  }
+</script>
+
+<style is:global>
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --raise: #1c1c1c;
+    --line: #262626;
+    --line-strong: #3a3a3a;
+    --ink: #ededed;
+    --muted: #a1a1a1;
+    /* Light enough for 4.5:1 contrast on every card tint. */
+    --faint: #8a8a8a;
+    --accent: #4cc9f0;
+    --ok: #3ec9a7;
+    --sans: 'Host Grotesk Variable', system-ui, sans-serif;
+    --mono: 'JetBrains Mono Variable', ui-monospace, monospace;
+    color-scheme: dark;
+  }
+
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font: 16px/1.5 var(--sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a {
+    color: inherit;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    border-radius: 4px;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+
+  .muted {
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation: none !important;
+      transition: none !important;
+    }
+  }
+</style>
+
+<style>
+  .wrap {
+    width: min(100% - 32px, 1200px);
+    margin-inline: auto;
+  }
+
+  .skip {
+    position: absolute;
+    left: 16px;
+    top: -100px;
+    z-index: 20;
+    padding: 8px 14px;
+    border-radius: 8px;
+    background: var(--accent);
+    color: var(--bg);
+  }
+  .skip:focus {
+    top: 12px;
+  }
+
+  /* Top bar */
+  .topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    height: 64px;
+    border-bottom: 1px solid var(--line);
+    background: rgb(10 10 10 / 0.92);
+    backdrop-filter: blur(8px);
+  }
+  .topbar-inner {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    height: 100%;
+  }
+  .name {
+    font-size: 18px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 5px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    color: var(--ink);
+    font-size: 13px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .pill:hover {
+    border-color: var(--muted);
+  }
+  .pill-short {
+    display: none;
+  }
+  .nav {
+    display: flex;
+    gap: 28px;
+    margin-left: auto;
+  }
+  .nav a {
+    color: var(--muted);
+    font-size: 15px;
+    text-decoration: none;
+  }
+  .nav a:hover {
+    color: var(--ink);
+  }
+  .menu {
+    display: none;
+    position: relative;
+    margin-left: auto;
+  }
+  .menu summary {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    list-style: none;
+    cursor: pointer;
+    border-radius: 8px;
+  }
+  .menu summary::-webkit-details-marker {
+    display: none;
+  }
+  .menu summary span,
+  .menu summary span::before,
+  .menu summary span::after {
+    display: block;
+    width: 18px;
+    height: 1.5px;
+    background: var(--ink);
+  }
+  .menu summary span {
+    position: relative;
+  }
+  .menu summary span::before,
+  .menu summary span::after {
+    content: '';
+    position: absolute;
+  }
+  .menu summary span::before {
+    top: -6px;
+  }
+  .menu summary span::after {
+    top: 6px;
+  }
+  .menu nav {
+    position: absolute;
+    right: 0;
+    top: 48px;
+    display: grid;
+    min-width: 170px;
+    padding: 6px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--surface);
+  }
+  .menu nav a {
+    padding: 10px 12px;
+    border-radius: 6px;
+    text-decoration: none;
+  }
+  .menu nav a:hover {
+    background: var(--raise);
+  }
+
+  @media (max-width: 760px) {
+    .nav {
+      display: none;
+    }
+    .menu {
+      display: block;
+    }
+  }
+  @media (max-width: 420px) {
+    .topbar-inner {
+      gap: 12px;
+    }
+    .pill-long {
+      display: none;
+    }
+    .pill-short {
+      display: inline;
+    }
+  }
+
+  /* Landing: exactly one viewport tall, type scales with width and height. */
+  .landing {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: calc(100svh - 64px);
+    padding-block: clamp(12px, 3svh, 40px);
+  }
+  .intro {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, min(6.1vw, 9.4svh), 88px);
+    font-weight: 500;
+    line-height: 1.04;
+    letter-spacing: -0.04em;
+  }
+  h1 span {
+    display: block;
+  }
+  .badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: clamp(10px, 3.4svh, 34px) 0 0;
+    color: var(--muted);
+    font-size: clamp(15px, 2.3svh, 20px);
+  }
+  .badge i,
+  .section-label i {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--ok);
+  }
+  .badge strong {
+    color: var(--ink);
+    font-weight: 500;
+  }
+  .lede {
+    margin: clamp(8px, 2.6svh, 26px) 0 0;
+    color: var(--muted);
+    font-size: clamp(15px, min(1.4vw, 2.2svh), 19px);
+  }
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin: clamp(14px, 4.4svh, 44px) 0 0;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: clamp(40px, 5.6svh, 50px);
+    padding: 0 clamp(20px, 2.2vw, 28px);
+    border-radius: 99px;
+    font-size: clamp(15px, 2svh, 18px);
+    font-weight: 500;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: #04121a;
+  }
+  .btn-primary:hover {
+    background: #7dd8f4;
+  }
+  .btn-outline {
+    border: 1px solid var(--line-strong);
+  }
+  .btn-outline:hover {
+    border-color: var(--muted);
+  }
+  .landing :global(.graph) {
+    flex: none;
+    margin-top: clamp(16px, 6.5svh, 60px);
+  }
+
+  @media (max-width: 720px) {
+    .lede {
+      max-width: 30ch;
+    }
+  }
+  /* Short screens: drop the caption first, then the whole graph. */
+  @media (max-height: 700px) {
+    .landing :global(.caption) {
+      display: none;
+    }
+  }
+  @media (max-height: 540px) {
+    .landing :global(.graph) {
+      display: none;
+    }
+  }
+
+  /* Projects */
+  .projects {
+    padding-block: clamp(64px, 10vw, 120px) 40px;
+  }
+  .section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+  .section-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 18px;
+    color: var(--muted);
+    font: 400 12px var(--mono);
+    text-transform: uppercase;
+  }
+  .section-label i {
+    background: var(--accent);
+  }
+  h2 {
+    margin: 0;
+    font-size: clamp(36px, 5vw, 64px);
+    font-weight: 500;
+    line-height: 1.05;
+    letter-spacing: -0.035em;
+  }
+  h2 span {
+    display: block;
+  }
+  .aside {
+    max-width: 40ch;
+    margin: 0;
+    color: var(--muted);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+  }
+  @media (max-width: 1100px) {
+    .grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  @media (max-width: 720px) {
+    .grid {
+      grid-template-columns: minmax(0, 1fr);
+    }
+  }
+
+  /* Contact */
+  .contact {
+    padding-block: clamp(64px, 9vw, 112px) clamp(48px, 7vw, 88px);
+  }
+  .contact .section-label {
+    margin-bottom: 16px;
+  }
+  .email {
+    font-size: clamp(30px, 5vw, 56px);
+    font-weight: 400;
+    letter-spacing: -0.03em;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  .email:hover {
+    color: var(--accent);
+  }
+  .email span {
+    margin-left: 0.3em;
+    font-size: 0.8em;
+  }
+
+  /* Footer */
+  .footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    padding-block: 28px 40px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 15px;
+  }
+  .footer p {
+    margin: 0;
+  }
+  .served {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+</style>

@@ -17,7 +17,7 @@ build-image:
   image: docker:28
   script:
     - echo "$CI_JOB_TOKEN" | docker login -u gitlab-ci-token --password-stdin "$CI_REGISTRY"
-    - docker build --provenance=false -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
+    - docker build --provenance=false --build-arg CI_COMMIT_SHORT_SHA --build-arg CI_PIPELINE_IID -t "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA" .
     - docker push "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA"
 
 package-chart:
