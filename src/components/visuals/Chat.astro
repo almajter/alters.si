@@ -1,0 +1,47 @@
+---
+// The tutor answers with a question instead of the answer.
+---
+
+<div class="art">
+  <p class="student"><span class="sr-only">Student: </span>So x = 4, right? Just tell me.</p>
+  <p class="tutor"><span class="sr-only">Tutor: </span>What happens if you divide both sides of 3x = 12 by 3?</p>
+  <p class="tag">vllm serve · 1× GPU</p>
+</div>
+
+<style>
+  .art {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 12px;
+    height: 100%;
+    padding: 24px;
+    font-size: 14px;
+    line-height: 1.4;
+  }
+  p {
+    margin: 0;
+    padding: 9px 14px;
+    border-radius: 12px;
+  }
+  .student {
+    align-self: flex-end;
+    max-width: 80%;
+    border: 1px solid var(--line-strong);
+    color: var(--muted);
+  }
+  .tutor {
+    align-self: flex-start;
+    max-width: 85%;
+    border: 1px solid rgb(181 140 255 / 0.65);
+    background: rgb(181 140 255 / 0.12);
+  }
+  .tag {
+    align-self: flex-start;
+    padding: 4px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 6px;
+    color: var(--faint);
+    font: 12px var(--mono);
+  }
+</style>
