@@ -1,0 +1,89 @@
+---
+import Icon from '../Icon.astro';
+import { build } from '../../data/content';
+
+// How this site gets deployed, one step per row.
+const steps = [
+  { label: 'push', icon: 'github', detail: 'GitHub, mirrored to GitLab' },
+  { label: 'CI', icon: 'gitlab', detail: 'astro build, docker build' },
+  { label: 'chart', icon: 'helm', detail: `image :${build.sha} · chart ${build.chart}` },
+  { label: 'sync', icon: 'argo', detail: 'Argo CD rolls out the chart' },
+  { label: '2 pods', icon: 'kubernetes', detail: 'nginx, one per worker' },
+];
+---
+
+<div class="art">
+  <ol>
+    {
+      steps.map((s) => (
+        <li>
+          <span class="tile">
+            <Icon name={s.icon} size={18} />
+          </span>
+          <span class="text">
+            <strong>{s.label}</strong>
+            <span>{s.detail}</span>
+          </span>
+        </li>
+      ))
+    }
+  </ol>
+</div>
+
+<style>
+  .art {
+    display: grid;
+    align-content: center;
+    height: 100%;
+    padding: 28px 24px;
+  }
+  ol {
+    display: grid;
+    gap: 14px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  /* The line joining each step to the next. */
+  li + li::before {
+    content: '';
+    position: absolute;
+    left: 19px;
+    bottom: 100%;
+    width: 2px;
+    height: 14px;
+    background: rgb(91 155 248 / 0.7);
+  }
+  .tile {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: var(--bg);
+  }
+  .text {
+    display: grid;
+    min-width: 0;
+    font: 12px/1.4 var(--mono);
+  }
+  strong {
+    color: var(--ink);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .text span {
+    overflow: hidden;
+    color: var(--faint);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+</style>

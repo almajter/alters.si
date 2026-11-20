@@ -1,0 +1,257 @@
+---
+import Icon from '../Icon.astro';
+import { homeServer as h } from '../../data/content';
+---
+
+<div class="art">
+  <div class="host">
+    <p class="host-title">
+      <Icon name="proxmox" size={15} />{h.hostTitle}
+      <span class="online"><span class="dot"></span>online</span>
+    </p>
+    <ul class="vms">
+      {
+        h.vms.map((vm) => (
+          <li>
+            <span class="dot" />
+            <span class="name">{vm.name}</span>
+            <span class="role">{vm.role}</span>
+            <span class="meter" aria-hidden="true">
+              <span style={`width:${vm.load * 100}%`} />
+            </span>
+          </li>
+        ))
+      }
+    </ul>
+    <p class="note">{h.vmCaption}</p>
+  </div>
+
+  <div class="hosted">
+    <p class="hosted-title">Self-hosted on it</p>
+    <ul>
+      {
+        h.selfHosted.map((s) => (
+          <li>
+            {s.href ? (
+              <a href={s.href}>
+                <Icon name={s.icon} size={14} />
+                {s.label}
+              </a>
+            ) : (
+              <span>
+                <Icon name={s.icon} size={14} />
+                {s.label}
+              </span>
+            )}
+            {s.where && <small>{s.where}</small>}
+          </li>
+        ))
+      }
+    </ul>
+  </div>
+
+  <p class="tunnel">
+    {
+      h.tunnel.path.map((step, i) => (
+        <>
+          {i > 0 && (
+            <>
+              <span class="wire" aria-hidden="true" />
+              <span class="sr-only">to</span>
+            </>
+          )}
+          <span class="hop">
+            <Icon name={step.icon} size={15} />
+            {step.label}
+          </span>
+        </>
+      ))
+    }
+    <span class="ports"><span class="dot"></span>{h.tunnel.note}</span>
+  </p>
+</div>
+
+<style>
+  .art {
+    display: grid;
+    grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
+    gap: 28px 32px;
+    align-content: center;
+    height: 100%;
+    padding: clamp(20px, 4vw, 56px);
+    font-size: 14px;
+  }
+  .host {
+    padding: 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: var(--bg);
+  }
+  .host-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 2px 4px 12px;
+    font-weight: 500;
+  }
+  .online {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    color: var(--ok);
+    font-size: 13px;
+    font-weight: 400;
+  }
+  .dot {
+    flex: none;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--ok);
+  }
+  .vms {
+    display: grid;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .vms li {
+    display: grid;
+    grid-template-columns: auto 84px 1fr 64px;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 6px;
+    background: var(--raise);
+  }
+  .name {
+    font-family: var(--mono);
+    font-size: 13px;
+  }
+  .role {
+    overflow: hidden;
+    color: var(--faint);
+    font-size: 13px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  /* Decoration only: no numbers behind these. */
+  .meter {
+    height: 3px;
+    border-radius: 2px;
+    background: var(--line);
+  }
+  .meter span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: rgb(254 117 14 / 0.55);
+  }
+  .note {
+    margin: 12px 4px 2px;
+    color: var(--faint);
+    font-size: 12px;
+  }
+
+  .hosted-title {
+    margin: 0 0 12px;
+    color: var(--faint);
+    font: 12px var(--mono);
+    text-transform: uppercase;
+  }
+  .hosted ul {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .hosted li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .hosted li > a,
+  .hosted li > span {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    border: 1px solid var(--line-strong);
+    border-radius: 99px;
+    background: var(--bg);
+    color: var(--ink);
+    text-decoration: none;
+  }
+  .hosted li > a:hover {
+    border-color: var(--accent);
+  }
+  .hosted small {
+    color: var(--faint);
+    font: 12px var(--mono);
+  }
+
+  .tunnel {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0;
+    padding: 12px 20px;
+    border: 1px solid rgb(254 117 14 / 0.55);
+    border-radius: 99px;
+    background: var(--bg);
+  }
+  .hop {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+  }
+  .wire {
+    flex: 0 1 40px;
+    min-width: 14px;
+    height: 2px;
+    background: rgb(76 201 240 / 0.6);
+  }
+  .ports {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    color: var(--ok);
+    font-size: 13px;
+  }
+
+  @media (max-width: 720px) {
+    .art {
+      grid-template-columns: 1fr;
+    }
+    /* Phones: the path runs top to bottom. */
+    .tunnel {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+      border-radius: 14px;
+    }
+    .ports {
+      width: 100%;
+      margin: 6px 0 0;
+    }
+    .wire {
+      flex: none;
+      width: 2px;
+      min-width: 0;
+      height: 12px;
+      margin-left: 6px;
+    }
+    .vms li {
+      grid-template-columns: auto 84px 1fr;
+    }
+    .meter {
+      display: none;
+    }
+  }
+</style>

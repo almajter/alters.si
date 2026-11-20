@@ -1,0 +1,86 @@
+---
+// The real setup: tmux bar on top in Catppuccin Mocha, robbyrussell prompt,
+// Alacritty's default colours underneath.
+---
+
+<div class="art">
+  <div class="term">
+    <p class="bar">
+      <span class="session">dotfiles</span>
+      <span class="win active">1 zsh</span>
+      <span class="win">2 nvim</span>
+    </p>
+    <div class="screen">
+      <p><span class="arrow">➜</span>  <span class="dir">~</span> config status</p>
+      <p>On branch local</p>
+      <p class="out">nothing to commit (use -u to show untracked files)</p>
+      <p><span class="arrow">➜</span>  <span class="dir">~</span> nvim .zshrc<span class="caret" aria-hidden="true"></span></p>
+    </div>
+  </div>
+</div>
+
+<style>
+  .art {
+    display: grid;
+    align-content: center;
+    height: 100%;
+    padding: 24px;
+  }
+  .term {
+    overflow: hidden;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: #181818;
+    color: #d8d8d8;
+    font: 12px/1.6 var(--mono);
+  }
+  p {
+    margin: 0;
+  }
+  .bar {
+    display: flex;
+    background: #1e1e2e;
+    color: #9399b2; /* tmux uses #7f849c; one step lighter for 4.5:1 */
+    white-space: pre;
+  }
+  .bar span {
+    padding: 1px 8px;
+  }
+  .session {
+    margin-right: 6px;
+    background: #89b4fa;
+    color: #1e1e2e;
+    font-weight: 700;
+  }
+  .active {
+    background: #cba6f7;
+    color: #1e1e2e;
+    font-weight: 700;
+  }
+  .screen {
+    padding: 12px 14px 14px;
+    white-space: pre-wrap;
+  }
+  .arrow {
+    color: #4ec96b;
+    font-weight: 700;
+  }
+  .dir {
+    color: #5fd7d7;
+  }
+  .out {
+    color: var(--faint);
+  }
+  .caret {
+    display: inline-block;
+    width: 0.55em;
+    height: 1.1em;
+    margin-left: 4px;
+    vertical-align: -0.2em;
+    background: #d8d8d8;
+    animation: blink 1.1s steps(1) infinite;
+  }
+  @keyframes blink {
+    50% { opacity: 0; }
+  }
+</style>
