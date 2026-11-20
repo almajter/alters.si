@@ -1,0 +1,345 @@
+---
+import Icon from './Icon.astro';
+import HomeServer from './visuals/HomeServer.astro';
+import Pipeline from './visuals/Pipeline.astro';
+import Chat from './visuals/Chat.astro';
+import Topo from './visuals/Topo.astro';
+import Terminal from './visuals/Terminal.astro';
+import { obees, type Project } from '../data/content';
+
+interface Props {
+  project: Project;
+}
+
+const { project: p } = Astro.props;
+const visuals = { 'home-server': HomeServer, pipeline: Pipeline, chat: Chat, topo: Topo, terminal: Terminal };
+const Visual = p.visual === 'obees' ? null : visuals[p.visual];
+
+function linkIcon(href: string) {
+  if (href.includes('github.com')) return 'github';
+  if (href.includes('gitlab')) return 'gitlab';
+  if (href.includes('itch.io')) return 'itchdotio';
+  return null; // the live site: a plain square
+}
+---
+
+<article class:list={['card', `card-${p.visual}`]} id={p.id} style={`--c:${p.color}`}>
+  <div class="art">
+    {Visual && <Visual />}
+    {
+      p.visual === 'obees' && (
+        <video
+          class="obees-video"
+          muted
+          loop
+          playsinline
+          preload="none"
+          data-poster="/projects/obees/obees-render.jpg"
+          aria-label="OBEES gameplay: a lawn mower drifting through bee swarms"
+        >
+          <source src="/projects/obees/obees.webm" type="video/webm" />
+          <source src="/projects/obees/obees.mp4" type="video/mp4" />
+        </video>
+      )
+    }
+  </div>
+
+  <div class="body">
+    <div class="text">
+      {
+        p.visual === 'obees' ? (
+          <p class="badge">{p.kicker}</p>
+        ) : (
+          <p class="kicker">
+            <i />
+            {p.kicker}
+          </p>
+        )
+      }
+      <h3>{p.title}</h3>
+      <p class="desc">{p.description}</p>
+
+      {
+        p.visual === 'obees' && (
+          <p class="keys">
+            {obees.keys.map((k) => (
+              <span>
+                <kbd>{k.key}</kbd> {k.action}
+              </span>
+            ))}
+          </p>
+        )
+      }
+
+      <ul class="chips" aria-label="Technologies">
+        {
+          p.tech.map((t) => (
+            <li>
+              <Icon name={t.icon} size={14} color={p.color} />
+              {t.label}
+            </li>
+          ))
+        }
+      </ul>
+
+      <p class="links">
+        {
+          p.links.map((l) => (
+            <a href={l.href}>
+              <Icon name={linkIcon(l.href)} size={13} color="var(--accent)" />
+              {l.label}
+            </a>
+          ))
+        }
+      </p>
+    </div>
+
+    {
+      p.visual === 'obees' && (
+        <p class="stat">
+          <strong>{obees.stat.value}</strong>
+          <span>{obees.stat.label}</span>
+        </p>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+  }
+  .art {
+    flex: 1 0 auto;
+    min-height: 200px;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in srgb, var(--c) 8%, var(--surface));
+  }
+  /* Extra height goes to the art, except where the art has a fixed height. */
+  .body {
+    flex: none;
+    display: flex;
+    padding: 24px 24px 22px;
+  }
+  .text {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .kicker {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 8px;
+    color: var(--muted);
+    font: 12px var(--mono);
+    text-transform: uppercase;
+  }
+  .kicker i {
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--c);
+  }
+  h3 {
+    margin: 0 0 8px;
+    font-size: 26px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+  .desc {
+    max-width: 62ch;
+    margin: 0 0 18px;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0 0 16px;
+    padding: 0;
+    list-style: none;
+  }
+  .chips li {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 5px 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--raise);
+    font-size: 13px;
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 20px;
+    /* Pushed to the bottom, so links in one row line up. */
+    margin: auto 0 0;
+  }
+  .links a {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--accent);
+    font: 13px var(--mono);
+    text-decoration: none;
+  }
+  .links a:hover {
+    text-decoration: underline;
+  }
+  .links :global(.icon path) {
+    fill: var(--muted);
+  }
+
+  /* Home server: the wide card, two columns on desktop. */
+  .card-home-server {
+    grid-column: span 2;
+  }
+  .card-home-server h3 {
+    font-size: 34px;
+  }
+
+  /* The three cards in the middle row get the same art height. */
+  .card-chat .art,
+  .card-topo .art,
+  .card-terminal .art {
+    flex: none;
+    height: 300px;
+  }
+  .card-chat .body,
+  .card-topo .body,
+  .card-terminal .body {
+    flex: 1 0 auto;
+  }
+
+  /* OBEES: full width, video on the left. */
+  .card-obees {
+    grid-column: 1 / -1;
+    flex-direction: row;
+    border-color: rgb(255 201 60 / 0.4);
+  }
+  .card-obees > * {
+    flex: 1 1 50%;
+    min-width: 0;
+  }
+  .card-obees .art {
+    position: relative;
+    min-height: 320px;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+    background: #10170c;
+  }
+  .obees-video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .card-obees .body {
+    align-items: center;
+    gap: 32px;
+    padding: 32px;
+  }
+  .card-obees h3 {
+    font-size: 40px;
+    font-weight: 600;
+  }
+  .badge {
+    display: inline-block;
+    margin: 0 0 14px;
+    padding: 4px 12px;
+    border: 1px solid rgb(255 201 60 / 0.6);
+    border-radius: 99px;
+    color: #ffc93c;
+    font: 12px var(--mono);
+    text-transform: uppercase;
+  }
+  .keys {
+    display: flex;
+    gap: 24px;
+    margin: 0 0 18px;
+    color: var(--muted);
+    font-size: 14px;
+  }
+  kbd {
+    margin-right: 6px;
+    padding: 3px 8px;
+    border: 1px solid var(--line-strong);
+    border-bottom-width: 2px;
+    border-radius: 5px;
+    color: var(--ink);
+    font: 600 11px var(--mono);
+  }
+  .stat {
+    flex: none;
+    display: grid;
+    gap: 6px;
+    margin: 0;
+  }
+  .stat strong {
+    color: #ffc93c;
+    font-size: clamp(48px, 6vw, 80px);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.03em;
+    white-space: nowrap;
+  }
+  .stat span {
+    max-width: 12ch;
+    color: var(--muted);
+    font-size: 14px;
+  }
+
+  @media (max-width: 1100px) {
+    .card-obees .body {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .card-home-server {
+      grid-column: auto;
+    }
+    .card-obees {
+      flex-direction: column;
+    }
+    .card-obees .art {
+      min-height: 0;
+      aspect-ratio: 16 / 9;
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .card-obees .body {
+      padding: 24px;
+    }
+  }
+</style>
+
+<script>
+  // Load the OBEES render only near the viewport, then play the clip while the
+  // card is on screen. With reduced motion only the render image is shown.
+  const video = document.querySelector<HTMLVideoElement>('.obees-video');
+  const calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+  if (video) {
+    new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          video.poster ||= video.dataset.poster ?? '';
+          if (!calm.matches) video.play().catch(() => {});
+        } else {
+          video.pause();
+        }
+      },
+      { rootMargin: '300px 0px' },
+    ).observe(video);
+  }
+</script>

@@ -1,0 +1,74 @@
+---
+// Brand icon, inlined at build time: from simple-icons, or one of the few it lacks.
+import * as icons from 'simple-icons';
+
+interface Props {
+  name: string | null;
+  size?: number;
+  /** Fallback colour: used for the square when there is no icon. */
+  color?: string;
+}
+
+type Shape = { viewBox: string; paths: { d: string; fill: string }[] };
+
+// Brand colours too dark to read on the dark background.
+const lighter: Record<string, string> = { github: '#fafafa', helm: '#8fa3ff', opencode: '#fafafa' };
+
+// Not in simple-icons. Kubeflow: cncf/artwork, projects/kubeflow/icon/color.
+// OKD: okd-project/okd-web, static/img/brand/logo/o-icon.svg.
+const own: Record<string, Shape> = {
+  kubeflow: {
+    viewBox: '0 0 213.09 210.889',
+    paths: [
+      { fill: '#4279f4', d: 'M59.286,71.629l4.725,117.673,84.999-108.476c2.663-3.404,7.581-4.005,10.985-1.342.026.021.053.041.079.062l53.016,42.551-17.288-75.617-136.517,25.148Z' },
+      { fill: '#0028aa', d: 'M66.95,210.889h75.398l-46.297-37.146-29.101,37.146Z' },
+      { fill: '#014bd1', d: 'M156.421,96.72l-50.711,64.703,54.03,43.346,51.253-64.265-54.572-43.784Z' },
+      { fill: '#bedcff', d: 'M45.064,60.277l.012-.012L89.666,4.345,17.76,38.978,0,116.785s45.064-56.508,45.064-56.508Z' },
+      { fill: '#6ca1ff', d: 'M.991,140.666l47.761,59.885-4.552-114.077S.991,140.666.991,140.666Z' },
+      { fill: '#a1c3ff', d: 'M181.926,33.112L113.166,0l-42.793,53.662s111.553-20.55,111.553-20.55Z' },
+    ],
+  },
+  okd: {
+    viewBox: '0 0 80 80',
+    paths: [
+      { fill: '#f22b29', d: 'm 39.85,0.65 c 10.8,0 20.1,3.8 27.7,11.3 7.7,7.5 11.5,16.7 11.5,27.5 0,10.8 -3.9,20.2 -11.6,28.1 -7.7,7.9 -17,11.8 -27.7,11.8 -10.7,0 -19.6,-3.9 -27.3,-11.8 -7.7,-7.8 -11.5,-17.1 -11.5,-27.8 0,-10.7 3.8,-20 11.3,-27.7 7.6,-7.6 16.8,-11.4 27.6,-11.4 z m -25,39.4 c 0,7 2.5,13.1 7.5,18.3 5,5.2 10.9,7.9 17.6,7.9 6.7,0 12.8,-2.6 17.8,-7.7 5,-5.1 7.5,-11.4 7.5,-18.6 0,-7.2 -2.5,-13.4 -7.5,-18.7 -5,-5.3 -10.9,-8 -17.8,-8 -6.5,0 -12.4,2.6 -17.5,8 -5,5.3 -7.6,11.5 -7.6,18.8 z' },
+    ],
+  },
+};
+
+function shape(name: string): Shape {
+  if (own[name]) return own[name];
+  const icon = (icons as Record<string, { path: string; hex: string } | undefined>)[
+    `si${name[0].toUpperCase()}${name.slice(1)}`
+  ];
+  if (!icon) throw new Error(`no icon "${name}"`);
+  return { viewBox: '0 0 24 24', paths: [{ d: icon.path, fill: lighter[name] ?? `#${icon.hex}` }] };
+}
+
+const { name, size = 14, color = 'currentColor' } = Astro.props;
+const icon = name ? shape(name) : null;
+---
+
+{
+  icon ? (
+    <svg class="icon" width={size} height={size} viewBox={icon.viewBox} aria-hidden="true">
+      {icon.paths.map((p) => <path d={p.d} fill={p.fill} />)}
+    </svg>
+  ) : (
+    <span class="icon icon-square" style={`--size:${size}px;--c:${color}`} aria-hidden="true" />
+  )
+}
+
+<style>
+  .icon {
+    flex: none;
+    display: inline-block;
+  }
+  .icon-square {
+    width: calc(var(--size) * 0.7);
+    height: calc(var(--size) * 0.7);
+    margin: calc(var(--size) * 0.15);
+    border-radius: 2px;
+    background: var(--c);
+  }
+</style>

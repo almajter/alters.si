@@ -3,6 +3,8 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
+# Shown on the page as build sha and chart version.
+ARG CI_COMMIT_SHORT_SHA CI_PIPELINE_IID
 RUN npm run build
 
 FROM nginxinc/nginx-unprivileged:1.30.6-alpine
