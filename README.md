@@ -11,22 +11,27 @@ npm ci
 npm run dev   # http://localhost:4321
 ```
 
+All text on the page is in `src/data/content.ts`.
+
 ## Delivery
 
 ```mermaid
 flowchart LR
-  gh[GitHub] -->|"mirror (Actions)"| gl[self-hosted GitLab]
-  gl -->|CI| img["image :&lt;sha&gt;<br/>registry.alters.si"]
-  gl -->|CI| chart["Helm chart 0.1.&lt;n&gt;<br/>GitLab package registry"]
-  chart --> argo[Argo CD]
-  img --> argo
+  gh[GitHub] -->|mirror| ci[GitLab CI]
+  ci -->|"image :sha, chart 0.1.n"| reg[(GitLab registries)]
+  reg --> argo[Argo CD]
+  homelab[homelab repo] -->|chart version| argo
+  argo --> pods[2 nginx pods]
 ```
 
 - `Dockerfile`: Astro build, then `nginx-unprivileged` (non-root, port 8080).
 - `chart/`: Deployment, Service, Ingress, PodDisruptionBudget. 2 replicas
   on different nodes, read-only root filesystem, no capabilities.
 - `.gitlab-ci.yml`: builds the image (tag = short commit SHA) and publishes
-  the chart (version `0.1.<pipeline>`, appVersion = the same SHA).
+  the chart (version `0.1.<pipeline>`, appVersion = the same SHA). It passes
+  `CI_COMMIT_SHORT_SHA` and `CI_PIPELINE_IID` into `docker build`, so the page
+  shows the real build and chart version; without them it falls back to
+  `git rev-parse` and `0.1.<n>`.
 - Deploy: bump the chart version in the homelab repo.
 
 Images are built with `--provenance=false`; GitLab's registry rejects
