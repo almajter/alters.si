@@ -23,6 +23,8 @@ spec:
         - maxSkew: 1
           topologyKey: kubernetes.io/hostname
           whenUnsatisfiable: DoNotSchedule
+          # Skip the tainted control plane, or its 0 pods block every rollout.
+          nodeTaintsPolicy: Honor
           labelSelector:
             matchLabels:
               {{- include "alters-si.selectorLabels" . | nindent 14 }}
