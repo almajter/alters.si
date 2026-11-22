@@ -201,7 +201,7 @@ import { build, pipeline as p } from '../data/content';
     height: 2px;
     margin: 0 0.5em;
     align-self: center;
-    background: rgb(76 201 240 / 0.6);
+    background: rgb(var(--accent-rgb) / 0.6);
   }
   .end + .conn,
   .conn:has(+ .end) {
@@ -246,7 +246,7 @@ import { build, pipeline as p } from '../data/content';
     min-width: 0;
     position: relative;
     padding: 3.2em 1.4em 1.4em;
-    border: 1.5px solid rgb(91 155 248 / 0.55);
+    border: 1.5px solid rgb(var(--accent-rgb) / 0.55);
     border-radius: 18px;
   }
   .frame-label {
@@ -331,9 +331,9 @@ import { build, pipeline as p } from '../data/content';
     gap: 0.6em;
     margin: 0.7em 0.75em 0.6em;
     padding: 0.45em 0.8em;
-    border: 1px solid rgb(76 201 240 / 0.7);
+    border: 1px solid rgb(var(--accent-rgb) / 0.7);
     border-radius: 6px;
-    background: rgb(76 201 240 / 0.06);
+    background: rgb(var(--accent-rgb) / 0.06);
     white-space: nowrap;
   }
   .argo strong {
