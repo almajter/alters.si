@@ -143,8 +143,6 @@ export const projects: Project[] = [
     tech: [
       { label: 'Astro', icon: 'astro' },
       { label: 'TypeScript', icon: 'typescript' },
-      { label: 'sharp', icon: 'sharp' },
-      { label: 'Satori', icon: null },
       { label: 'Helm', icon: 'helm' },
       { label: 'Argo CD', icon: 'argo' },
     ],
