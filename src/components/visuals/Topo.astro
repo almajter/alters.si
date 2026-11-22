@@ -5,9 +5,9 @@ import karma from '../../assets/zalog-karma.jpg';
 import { zalogTopo as t } from '../../data/content';
 
 // Same grade colours as the guide itself.
-const band = (g: string) => (g < '7a' ? '#2f8a4c' : g < '7c' ? '#2c6bb3' : g <= '8a' ? '#d97a10' : '#8e1c3a');
-// White on the orange is too faint, so that one gets dark text.
-const ink = (g: string) => (band(g) === '#d97a10' ? '#1a1200' : '#fff');
+const band = (g: string) => (g < '7a' ? '#2f9a54' : g < '7c' ? '#2f74c4' : g <= '8a' ? '#e5850f' : '#c0244c');
+// White on green and orange is too faint, as in the guide.
+const ink = (g: string) => (['#2f9a54', '#e5850f'].includes(band(g)) ? '#1d211e' : '#fff');
 ---
 
 <div class="art">
@@ -27,7 +27,7 @@ const ink = (g: string) => (band(g) === '#d97a10' ? '#1a1200' : '#fff');
       {
         t.problems.map((p) => (
           <li>
-            <span class="num">{p.num}</span>
+            <span class="num" style={`background:${band(p.grade)};color:${ink(p.grade)}`}>{p.num}</span>
             <span class="name">{p.name}</span>
             <span class="grade" style={`background:${band(p.grade)};color:${ink(p.grade)}`}>{p.grade}</span>
           </li>
@@ -98,9 +98,8 @@ const ink = (g: string) => (band(g) === '#d97a10' ? '#1a1200' : '#fff');
     place-items: center;
     width: 20px;
     height: 20px;
-    border: 1.5px solid #e5322d;
+    border: 1.5px solid #fff;
     border-radius: 50%;
-    color: #ff6b66;
     font-size: 11px;
     font-weight: 600;
   }

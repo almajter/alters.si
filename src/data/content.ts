@@ -139,12 +139,14 @@ export const projects: Project[] = [
     color: '#3ec9a7',
     visual: 'topo',
     description:
-      'A guide to the boulders at Zalog: photos with the lines drawn on, and a grade and notes for each problem. One visit saves it for offline use, and every wall can be saved as an image.',
+      "A guide to the boulders at Zalog: every wall's lines drawn over the photo, coloured by grade, with filters and a ticklist that stays on the phone. One visit saves it for offline use, and it installs as an app. Shipped like this site: own Helm chart, deployed by Argo CD.",
     tech: [
       { label: 'Astro', icon: 'astro' },
       { label: 'TypeScript', icon: 'typescript' },
       { label: 'sharp', icon: 'sharp' },
       { label: 'Satori', icon: null },
+      { label: 'Helm', icon: 'helm' },
+      { label: 'Argo CD', icon: 'argo' },
     ],
     links: [
       { label: 'zalog.alters.si ↗', href: 'https://zalog.alters.si' },
@@ -217,7 +219,7 @@ export const homeServer = {
 // The wall shown on the zalog card, copied from the guide.
 export const zalogTopo = {
   wall: 'Karma',
-  alt: 'The Karma boulder at Zalog with the problem lines drawn on in red',
+  alt: 'The Karma boulder at Zalog with the problem lines drawn on, coloured by grade',
   problems: [
     { num: '1', name: 'Cookie?', grade: '7a' },
     { num: '5', name: 'Sekalica', grade: '7b' },
